@@ -47,6 +47,7 @@ def getMessage(sender, reciever, verb, gif):
     msg = msg.replace("VERB", verb)
     out.description = msg
     out.set_image(url=gif.url)
+
     return out
 
 @client.event
@@ -58,7 +59,6 @@ async def on_ready():
     with shelve.open(config.dbPath) as db:
         if ("gifs" in db):
             reactions = db["gifs"]
-            reactions["hug"][0].tags
         else:
             db["gifs"] = reactions
     global idnumber
@@ -75,7 +75,7 @@ async def on_message(message):
     messageContent = message.content
     messageContent = re.sub('\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
-    print(splitMessage)
+    # print(splitMessage)
     if (message.content.startswith("+")):
         if (message.content.startswith("+f ")):
             if (len(message.mentions) != 0):
@@ -101,15 +101,23 @@ async def on_message(message):
 
         cmd = message.content.split()[0][1:]
         if (len(message.mentions) != 0):
-            if (cmd in reactions):
-                tags = []
-                if (len(splitMessage) >= 3):
-                    for i in range(2, len(splitMessage)):
-                        tags.append(splitMessage[i])
+            if (message.mentions[0].id == message.author.id and
+                    cmd in config.selfHarmVerbs):
+                out = discord.Embed()
+                out.description = config.selfMessage.replace("SENDER",
+                        message.author.display_name)
+                out.set_image(url=config.selfImage)
+                await message.channel.send(embed=out)
+            else:
+                if (cmd in reactions):
+                    tags = []
+                    if (len(splitMessage) >= 3):
+                        for i in range(2, len(splitMessage)):
+                            tags.append(splitMessage[i])
 
-                send = getMessage(message.author, message.mentions[0], cmd,
-                        getGif(cmd, tags))
-                await message.channel.send(embed=send)
+                    send = getMessage(message.author, message.mentions[0], cmd,
+                            getGif(cmd, tags))
+                    await message.channel.send(embed=send)
 
     if (message.content.startswith("<@!" + str(idnumber) + ">") or
             message.content.startswith("<@" + str(idnumber) + ">")):
