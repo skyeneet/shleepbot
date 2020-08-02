@@ -4,6 +4,9 @@ admins = [156903320945033216]
 
 message = "**RECIEVER**, you got a VERB from **SENDER**"
 
+selfMessage = "**SENDER**, you can't do that to yourself..."
+selfImage = "https://cdn.discordapp.com/attachments/726544275608961045/739464357523488798/why-why-would-2758b18d3a.png"
+
 noGifFound = "https://wallpapercave.com/wp/wp2098611.jpg"
 
 hearts = ["heart", "purple_heart", "white_heart", "green_heart", "yellow_heart", "black_heart", "brown_heart", "blue_heart", "orange_heart"]
