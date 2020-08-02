@@ -75,7 +75,6 @@ async def on_message(message):
     messageContent = message.content
     messageContent = re.sub('\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
-    print(splitMessage)
     if (message.content.startswith("+")):
         if (message.content.startswith("+f ")):
             if (len(message.mentions) != 0):
