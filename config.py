@@ -4,7 +4,12 @@ admins = [156903320945033216]
 
 message = "**RECIEVER**, you got a VERB from **SENDER**"
 
+selfMessage = "**SENDER**, please don't do that to yourself..."
+selfImage = "https://wallpapercave.com/wp/wp2098611.jpg"
+selfHarmVerbs = ["kill", "slash", "punch", "stab"]
+
 noGifFound = "https://wallpapercave.com/wp/wp2098611.jpg"
+
 
 hearts = ["heart", "purple_heart", "white_heart", "green_heart", "yellow_heart", "black_heart", "brown_heart", "blue_heart", "orange_heart"]
 
