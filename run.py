@@ -66,6 +66,7 @@ async def on_ready():
 async def on_message(message):
     global reactions
     global deletion
+    print(message.content)
     splitMessage = message.content.split(" ")
     if (message.content.startswith("+")):
         if (message.content.startswith("+f ")):
@@ -77,6 +78,18 @@ async def on_message(message):
                 out = out + config.hearts[random.randint(0,len(config.hearts))]
                 out += ":"
                 await message.channel.send(out)
+            else:
+                out = "**SENDER** has paid their respects for **RECIEVER** :"
+                reciev = ""
+                for i in range(1,len(splitMessage)):
+                    reciev += splitMessage[i]
+                out = out.replace("RECIEVER",
+                        reciev)
+                out = out.replace("SENDER", message.author.display_name)
+                out = out + config.hearts[random.randint(0,len(config.hearts))]
+                out += ":"
+                await message.channel.send(out)
+
 
         cmd = message.content.split()[0][1:]
         if (len(message.mentions) != 0):

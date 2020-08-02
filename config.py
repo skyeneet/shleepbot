@@ -38,5 +38,6 @@ Special Commands:\n\
 ```\n\
 +f <@Recipient>\n\
     - Pays your respect to someone\n\
+```\n\
 \n\
 [] means optional"
