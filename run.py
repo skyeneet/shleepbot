@@ -76,7 +76,7 @@ async def on_message(message):
     messageContent = re.sub('\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
     if (message.content.startswith("+")):
-        if (message.content.startswith("+f ")):
+        if (message.content.startswith("+f")):
             if (len(message.mentions) != 0):
                 out = "**SENDER** has paid their respects for **RECIEVER** :"
                 out = out.replace("RECIEVER",
@@ -86,7 +86,10 @@ async def on_message(message):
                 out += ":"
                 await message.channel.send(out)
             else:
-                out = "**SENDER** has paid their respects for **RECIEVER** :"
+                if (len(splitMessage) > 1):
+                    out = "**SENDER** has paid their respects for **RECIEVER** :"
+                else:
+                    out = "**SENDER** has paid their respects :"
                 reciev = ""
                 for i in range(1,len(splitMessage)):
                     reciev += splitMessage[i]
