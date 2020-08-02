@@ -4,11 +4,14 @@ import shelve
 import config
 import random
 import copy
+import re
 from gif import Gif
 
 global reactions
 reactions = {}
 
+global idnumber
+idnumber = 0
 
 client = discord.Client()
 
@@ -58,6 +61,8 @@ async def on_ready():
             reactions["hug"][0].tags
         else:
             db["gifs"] = reactions
+    global idnumber
+    idnumber = client.user.id
 
 
 
@@ -66,8 +71,11 @@ async def on_ready():
 async def on_message(message):
     global reactions
     global deletion
-    print(message.content)
-    splitMessage = message.content.split(" ")
+    global idnumber
+    messageContent = message.content
+    messageContent = re.sub('\s+',' ',messageContent)
+    splitMessage = messageContent.split(" ")
+    print(splitMessage)
     if (message.content.startswith("+")):
         if (message.content.startswith("+f ")):
             if (len(message.mentions) != 0):
@@ -103,7 +111,7 @@ async def on_message(message):
                         getGif(cmd, tags))
                 await message.channel.send(embed=send)
 
-    if (message.content.startswith("<@!739163485555916883>")):
+    if (message.content.startswith("<@!" + str(idnumber) + ">")):
         if (splitMessage[1] == "verbs"):
             if (len(reactions.keys()) == 0):
                 await message.channel.send("No verbs found! Add some!")
@@ -145,7 +153,7 @@ async def on_message(message):
             await message.channel.send(embed=out)
         if(splitMessage[1] == "choose"):
             unsplit = message.content
-            unsplit = unsplit[len("<@!739163485555916883> choose "):]
+            unsplit = unsplit[len("<@!" + str(idnumber) + "> choose "):]
             print(unsplit)
             split = unsplit.split("|")
             choice = split[random.randint(0, len(split) - 1)]
@@ -202,7 +210,7 @@ found!")
                     db["gifs"] = reactions
 
 
-    if (message.content == "<@!739163485555916883> I'm sure!" and
+    if (message.content == "<@!" + str(idnumber) + "> I'm sure!" and
             deletion[0]):
         reactions.pop(deletion[1], None)
         await message.channel.send("Deleted the " +
