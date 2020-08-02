@@ -111,7 +111,8 @@ async def on_message(message):
                         getGif(cmd, tags))
                 await message.channel.send(embed=send)
 
-    if (message.content.startswith("<@!" + str(idnumber) + ">")):
+    if (message.content.startswith("<@!" + str(idnumber) + ">") or
+            message.content.startswith("<@" + str(idnumber) + ">")):
         if (splitMessage[1] == "verbs"):
             if (len(reactions.keys()) == 0):
                 await message.channel.send("No verbs found! Add some!")
@@ -210,7 +211,8 @@ found!")
                     db["gifs"] = reactions
 
 
-    if (message.content == "<@!" + str(idnumber) + "> I'm sure!" and
+    if ((message.content == "<@!" + str(idnumber) + "> I'm sure!" or
+          message.content == "<@" + str(idnumber) + "> I'm sure!")  and
             deletion[0]):
         reactions.pop(deletion[1], None)
         await message.channel.send("Deleted the " +
