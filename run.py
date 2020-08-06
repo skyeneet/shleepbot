@@ -175,6 +175,16 @@ async def on_message(message):
             await message.channel.send("**" +
                     message.author.display_name + "**" +
             ", **" + choice.strip() + "** is the best choice")
+        if (splitMessage[1] == "eightball"):
+            question = ""
+            for i in range (2, len(splitMessage)):
+                question += splitMessage[i] + " "
+            answer = config.eightballMessages[random.randint(0,len(config.eightballMessages))]
+            out = config.eightballMessage
+            out = out.replace("QUESTION", question)
+            out = out.replace("ANSWER", answer)
+            await message.channel.send(out)
+
 
 
         if(splitMessage[1] == "add"):

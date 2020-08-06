@@ -1,12 +1,12 @@
 dbPath = "storage/storage.db"
-token = "token"
+token = ""
 admins = [156903320945033216]
 
 message = "**RECIEVER**, you got a VERB from **SENDER**"
 
 selfMessage = "**SENDER**, please don't do that to yourself..."
 selfImage = "https://wallpapercave.com/wp/wp2098611.jpg"
-selfHarmVerbs = ["kill", "slash", "punch", "stab"]
+selfHarmVerbs = ["kill", "slash", "punch", "stab", "shoot"]
 
 noGifFound = "https://wallpapercave.com/wp/wp2098611.jpg"
 
@@ -46,3 +46,11 @@ Special Commands:\n\
 ```\n\
 \n\
 [] means optional"
+
+
+eightballMessages = [ "Senpai, pls no ;-;", "Take a wild guess...",
+        "Without a doubt", "No", "Yes", "You'll be the judge", "Sure",
+        "Of course", "No way", "No... (╯°□°）╯︵ ┻━┻", "Very doubtful",
+        "Most likely", "Might be possible" ]
+eightballMessage = ":8ball: **Question:** QUESTION\n\
+**Answer:** ANSWER"
