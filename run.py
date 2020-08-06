@@ -92,11 +92,13 @@ async def on_message(message):
                     out = "**SENDER** has paid their respects :"
                 reciev = ""
                 for i in range(1,len(splitMessage)):
-                    reciev += splitMessage[i]
+                    reciev += splitMessage[i] + " "
                 out = out.replace("RECIEVER",
                         reciev)
                 out = out.replace("SENDER", message.author.display_name)
+
                 out = out + config.hearts[random.randint(0,len(config.hearts))]
+
                 out += ":"
                 await message.channel.send(out)
 
