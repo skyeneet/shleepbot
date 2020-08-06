@@ -166,8 +166,10 @@ async def on_message(message):
             await message.channel.send(embed=out)
         if(splitMessage[1] == "choose"):
             unsplit = message.content
-            unsplit = unsplit[len("<@!" + str(idnumber) + "> choose "):]
-            print(unsplit)
+            if (len(splitMessage[0]) == len("<@!" + str(idnumber) + ">")):
+                unsplit = unsplit[len("<@!" + str(idnumber) + "> choose "):]
+            else:
+                unsplit = unsplit[len("<@" + str(idnumber) + "> choose "):]
             split = unsplit.split("|")
             choice = split[random.randint(0, len(split) - 1)]
             await message.channel.send("**" +
