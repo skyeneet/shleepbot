@@ -1,7 +1,6 @@
 import asyncio
 import discord
-import shelve
-import config
+import shelve import config
 import random
 import copy
 import re
@@ -64,185 +63,222 @@ async def on_ready():
     global idnumber
     idnumber = client.user.id
 
+def verbCommand(message, splitMessage):
+    cmd = splitMessage[0][1:]
+    if (len(message.mentions) != 0):
+        if (message.mentions[0].id == message.author.id and
+                cmd in config.selfHarmVerbs):
+            out = discord.Embed()
+            out.description = config.selfMessage.replace("SENDER",
+                    message.author.display_name)
+            out.set_image(url=config.selfImage)
+            return None, out
+        else:
+            if (cmd in reactions):
+                tags = []
+                if (len(splitMessage) >= 3):
+                    for i in range(2, len(splitMessage)):
+                        tags.append(splitMessage[i])
 
+                send = getMessage(message.author, message.mentions[0], cmd,
+                        getGif(cmd, tags))
+                return None, send
+                
+def fCommand(message, splitMessage):
+    if (len(message.mentions) != 0):
+        out = "**SENDER** has paid their respects for **RECIEVER** :"
+        out = out.replace("RECIEVER",
+                message.mentions[0].display_name)
+        out = out.replace("SENDER", message.author.display_name)
+        out = out + config.hearts[random.randint(0,len(config.hearts))]
+        out += ":"
+        return out, None
+    else:
+        if (len(splitMessage) > 1):
+            out = "**SENDER** has paid their respects for **RECIEVER** :"
+        else:
+            out = "**SENDER** has paid their respects :"
+        reciev = ""
+        for i in range(1,len(splitMessage)):
+            reciev += splitMessage[i] + " "
+        out = out.replace("RECIEVER",
+                reciev)
+        out = out.replace("SENDER", message.author.display_name)
 
+        out = out + config.hearts[random.randint(0,len(config.hearts))]
 
+        out += ":"
+        return out, None
+
+def verbsCommand(message, splitMessage):
+    if (len(reactions.keys()) == 0):
+        return "No verbs found! Add some!", None
+    else:
+        out = "List of verbs:\n```\n"
+        for key in reactions.keys():
+            out+= "+" + key + "\n"
+        out+="```"
+        snd = discord.Embed()
+        snd.description = out
+
+        return None, snd
+   
+def tagsCommand(message, splitMessage):
+    gifs = reactions[splitMessage[2]]
+    tags = {}
+    for i in gifs:
+        for x in i.tags:
+            print ("|" + x + "|")
+            if (x not in tags):
+                tags[x] = 1
+            else:
+                tags[x] = tags[x] + 1
+    out = "Availble tags for " + splitMessage[2] + ":\n```\n"
+    for i in tags.keys():
+        num = 4 - len(str(tags[i]))
+        for n in range(0,num):
+            out+=" "
+        out+="("
+        out+=str(tags[i])
+        out+=")  " + i + "\n"
+    out+="```"
+    return out, None
+
+def helpCommand(message, splitMessage):
+    out = discord.Embed()
+    out.description = config.helpMessage
+    return None, out
+
+def chooseCommand(message, splitMessage):
+    unsplit = message.content
+    if (len(splitMessage[0]) == len("<@!" + str(idnumber) + ">")):
+        unsplit = unsplit[len("<@!" + str(idnumber) + "> choose "):]
+    else:
+        unsplit = unsplit[len("<@" + str(idnumber) + "> choose "):]
+    split = unsplit.split("|")
+    choice = split[random.randint(0, len(split) - 1)]
+    out = ("**" + message.author.display_name + "**" +
+    ", **" + choice.strip() + "** is the best choice")
+    
+    return out, None
+   
+def eightballCommand(message, splitMessage):
+    question = ""
+    for i in range (2, len(splitMessage)):
+        question += splitMessage[i] + " "
+    answer = config.eightballMessages[random.randint(0,len(config.eightballMessages))]
+    out = config.eightballMessage
+    out = out.replace("QUESTION", question)
+    out = out.replace("ANSWER", answer)
+    return out, None
+
+def addCommand(message, splitMessage): 
+    if (message.author.id not in config.admins):
+        out = "You are not an admin!"
+
+    else:
+        newGif = Gif()
+
+        newGif.url=splitMessage[3]
+        for i in range(4, len(splitMessage)):
+            newGif.tags.append(splitMessage[i])
+        if (splitMessage[2] in reactions.keys()):
+            reactions[splitMessage[2]].append(newGif)
+            out = "Added the image!"
+        else:
+            reactions[splitMessage[2]] = [newGif]
+            out = "Created the verb and added the image!"
+        with shelve.open(config.dbPath) as db:
+            db["gifs"] = reactions
+        return out, None
+
+def deleteCommand(message, splitMessage):
+    global deletion
+    if (message.author.id not in config.admins):
+        out = "You are not an admin!"
+    else:
+        if (splitMessage[2] == "verb"):
+            out = "Are you sure you want to \
+delete the verb? Respond with ```\n@Shleep Bot I'm \
+sure!\n```"
+            deletion = [True, splitMessage[3]]
+        if (splitMessage[2] == "gif"):
+            count = 0
+            shad = copy.deepcopy(reactions[splitMessage[3]])
+            print(len(shad))
+            for i in range(0,len(shad)):
+                print(i)
+                if (shad[i].url ==
+                        splitMessage[4]):
+                    del reactions[splitMessage[3]][i - count]
+                    count += 1
+            if (count > 0):
+                out = "Succesfully deleted the \
+image!"
+            else:
+                out = "No such image \
+found!"
+
+        with shelve.open(config.dbPath) as db:
+            db["gifs"] = reactions
+    return out, None
+
+def deleteVerify(message, splitMessage):
+    global deletion
+    reactions.pop(deletion[1], None)
+    out = "Deleted the " + deletion[1] + " verb!"
+    deletion = [False, None]
+    
+    with shelve.open(config.dbPath) as db:
+        db["gifs"] = reactions
+
+    return out, None
 @client.event
 async def on_message(message):
     global reactions
     global deletion
     global idnumber
+    out = tuple()
     messageContent = message.content
     messageContent = re.sub('\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
     if (message.content.startswith("+")):
         if (message.content.startswith("+f")):
-            if (len(message.mentions) != 0):
-                out = "**SENDER** has paid their respects for **RECIEVER** :"
-                out = out.replace("RECIEVER",
-                        message.mentions[0].display_name)
-                out = out.replace("SENDER", message.author.display_name)
-                out = out + config.hearts[random.randint(0,len(config.hearts))]
-                out += ":"
-                await message.channel.send(out)
-            else:
-                if (len(splitMessage) > 1):
-                    out = "**SENDER** has paid their respects for **RECIEVER** :"
-                else:
-                    out = "**SENDER** has paid their respects :"
-                reciev = ""
-                for i in range(1,len(splitMessage)):
-                    reciev += splitMessage[i] + " "
-                out = out.replace("RECIEVER",
-                        reciev)
-                out = out.replace("SENDER", message.author.display_name)
+            out = fCommand(message, splitMessage)
+        else:
+            out = verbCommand(message, splitMessage)
 
-                out = out + config.hearts[random.randint(0,len(config.hearts))]
-
-                out += ":"
-                await message.channel.send(out)
-
-
-        cmd = message.content.split()[0][1:]
-        if (len(message.mentions) != 0):
-            if (message.mentions[0].id == message.author.id and
-                    cmd in config.selfHarmVerbs):
-                out = discord.Embed()
-                out.description = config.selfMessage.replace("SENDER",
-                        message.author.display_name)
-                out.set_image(url=config.selfImage)
-                await message.channel.send(embed=out)
-            else:
-                if (cmd in reactions):
-                    tags = []
-                    if (len(splitMessage) >= 3):
-                        for i in range(2, len(splitMessage)):
-                            tags.append(splitMessage[i])
-
-                    send = getMessage(message.author, message.mentions[0], cmd,
-                            getGif(cmd, tags))
-                    await message.channel.send(embed=send)
-
-    if (message.content.startswith("<@!" + str(idnumber) + ">") or
+    elif (message.content.startswith("<@!" + str(idnumber) + ">") or
             message.content.startswith("<@" + str(idnumber) + ">")):
         if (splitMessage[1] == "verbs"):
-            if (len(reactions.keys()) == 0):
-                await message.channel.send("No verbs found! Add some!")
-            else:
-                out = "List of verbs:\n```\n"
-                for key in reactions.keys():
-                    out+= "+" + key + "\n"
-                out+="```"
-                snd = discord.Embed()
-                snd.description = out
+           out = verbsCommand(message, splitMessage) 
 
-                await message.channel.send(embed=snd)
+        elif(splitMessage[1] == "tags"):
+            out = tagsCommand(message, splitMessage)
 
-        if(splitMessage[1] == "tags"):
-            gifs = reactions[splitMessage[2]]
-            tags = {}
-            for i in gifs:
-                for x in i.tags:
-                    print ("|" + x + "|")
-                    if (x not in tags):
-                        tags[x] = 1
-                    else:
-                        tags[x] = tags[x] + 1
-            out = "Availble tags for " + splitMessage[2] + ":\n```\n"
-            for i in tags.keys():
-                num = 4 - len(str(tags[i]))
-                for n in range(0,num):
-                    out+=" "
-                out+="("
-                out+=str(tags[i])
-                out+=")  " + i + "\n"
-            out+="```"
+        elif(splitMessage[1] == "help"):
+            out = helpCommand(message, splitMessage)
 
-            await message.channel.send(out)
+        elif(splitMessage[1] == "choose"):
+            out = chooseCommand(message, splitMessage)
 
-        if(splitMessage[1] == "help"):
-            out = discord.Embed()
-            out.description = config.helpMessage
-            await message.channel.send(embed=out)
-        if(splitMessage[1] == "choose"):
-            unsplit = message.content
-            if (len(splitMessage[0]) == len("<@!" + str(idnumber) + ">")):
-                unsplit = unsplit[len("<@!" + str(idnumber) + "> choose "):]
-            else:
-                unsplit = unsplit[len("<@" + str(idnumber) + "> choose "):]
-            split = unsplit.split("|")
-            choice = split[random.randint(0, len(split) - 1)]
-            await message.channel.send("**" +
-                    message.author.display_name + "**" +
-            ", **" + choice.strip() + "** is the best choice")
-        if (splitMessage[1] == "eightball"):
-            question = ""
-            for i in range (2, len(splitMessage)):
-                question += splitMessage[i] + " "
-            answer = config.eightballMessages[random.randint(0,len(config.eightballMessages))]
-            out = config.eightballMessage
-            out = out.replace("QUESTION", question)
-            out = out.replace("ANSWER", answer)
-            await message.channel.send(out)
+        elif (splitMessage[1] == "eightball"):
+           out = eightballCommand(message, splitMessage) 
 
-
-
-        if(splitMessage[1] == "add"):
-            if (message.author.id not in config.admins):
-                await message.channel.send("You are not an admin!")
-
-            else:
-                newGif = Gif()
-
-                newGif.url=splitMessage[3]
-                for i in range(4, len(splitMessage)):
-                    newGif.tags.append(splitMessage[i])
-                if (splitMessage[2] in reactions.keys()):
-                    reactions[splitMessage[2]].append(newGif)
-                    await message.channel.send("Added the image!")
-                else:
-                    reactions[splitMessage[2]] = [newGif]
-                    await message.channel.send("Created the verb and added the image!")
-                with shelve.open(config.dbPath) as db:
-                    db["gifs"] = reactions
-        if(splitMessage[1] == "delete"):
-            if (message.author.id not in config.admins):
-                await message.channel.send("You are not an admin!")
-            else:
-                if (splitMessage[2] == "verb"):
-                    await message.channel.send("Are you sure you want to \
-delete the verb? Respond with ```\n@Shleep Bot I'm \
-sure!\n```")
-                    deletion = [True, splitMessage[3]]
-                if (splitMessage[2] == "gif"):
-                    count = 0
-                    shad = copy.deepcopy(reactions[splitMessage[3]])
-                    print(len(shad))
-                    for i in range(0,len(shad)):
-                        print(i)
-                        if (shad[i].url ==
-                                splitMessage[4]):
-                            del reactions[splitMessage[3]][i - count]
-                            count += 1
-                    if (count > 0):
-                        await message.channel.send("Succesfully deleted the \
-image!")
-                    else:
-                        await message.channel.send("No such image \
-found!")
-
-                with shelve.open(config.dbPath) as db:
-                    db["gifs"] = reactions
-
-
+        elif(splitMessage[1] == "add"):
+            out = addCommand(message, splitMessage)
+            
+        elif(splitMessage[1] == "delete"):
+            out = deleteCommand(message, splitMessage)
+            
     if ((message.content == "<@!" + str(idnumber) + "> I'm sure!" or
           message.content == "<@" + str(idnumber) + "> I'm sure!")  and
             deletion[0]):
-        reactions.pop(deletion[1], None)
-        await message.channel.send("Deleted the " +
-            deletion[1] + " verb!")
-        deletion = [False, None]
-        with shelve.open(config.dbPath) as db:
-            db["gifs"] = reactions
-
+            out = deleteVerify(message, splitMessage)
+        
+    try:
+        await message.channel.send(out[0], embed = out[1])
+    except IndexError:
+        pass
+    
 client.run(config.token)
