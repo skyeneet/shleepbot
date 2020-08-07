@@ -13,7 +13,11 @@ def backup():
   with open(config.backupPath + x.strftime("%m-%d-%y") + ".yaml", "w") as file:
     yaml.dump(reactions, file)
 
-
+def reload(fileName):
+  reactions = {}
+  with open(config.backupPath + fileName, "r") as file:
+    reactions = yaml.full_load(file)
+  print(reactions)
 
 
 def main():
