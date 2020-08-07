@@ -33,6 +33,8 @@ Admin Commands:\n\
     - Deletes a verb and all images contained within!\n\
 @Shleep Bot delete gif <verb> <url>\n\
     - Deletes a gif with the given verb + url\n\
+@Shleep Bot dump\n\
+    - Posts a yaml file of the current database\n\
 ```\n\
 \n\
 You can run any verb command with:\n\

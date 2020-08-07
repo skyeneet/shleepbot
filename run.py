@@ -1,9 +1,12 @@
 import asyncio
 import discord
-import shelve import config
+import shelve
+import config
 import random
 import copy
+import datetime
 import re
+import backup
 from gif import Gif
 
 global reactions
@@ -83,7 +86,7 @@ def verbCommand(message, splitMessage):
                 send = getMessage(message.author, message.mentions[0], cmd,
                         getGif(cmd, tags))
                 return None, send
-                
+
 def fCommand(message, splitMessage):
     if (len(message.mentions) != 0):
         out = "**SENDER** has paid their respects for **RECIEVER** :"
@@ -122,7 +125,7 @@ def verbsCommand(message, splitMessage):
         snd.description = out
 
         return None, snd
-   
+
 def tagsCommand(message, splitMessage):
     gifs = reactions[splitMessage[2]]
     tags = {}
@@ -159,9 +162,9 @@ def chooseCommand(message, splitMessage):
     choice = split[random.randint(0, len(split) - 1)]
     out = ("**" + message.author.display_name + "**" +
     ", **" + choice.strip() + "** is the best choice")
-    
+
     return out, None
-   
+
 def eightballCommand(message, splitMessage):
     question = ""
     for i in range (2, len(splitMessage)):
@@ -172,7 +175,7 @@ def eightballCommand(message, splitMessage):
     out = out.replace("ANSWER", answer)
     return out, None
 
-def addCommand(message, splitMessage): 
+def addCommand(message, splitMessage):
     if (message.author.id not in config.admins):
         out = "You are not an admin!"
 
@@ -228,7 +231,7 @@ def deleteVerify(message, splitMessage):
     reactions.pop(deletion[1], None)
     out = "Deleted the " + deletion[1] + " verb!"
     deletion = [False, None]
-    
+
     with shelve.open(config.dbPath) as db:
         db["gifs"] = reactions
 
@@ -251,7 +254,7 @@ async def on_message(message):
     elif (message.content.startswith("<@!" + str(idnumber) + ">") or
             message.content.startswith("<@" + str(idnumber) + ">")):
         if (splitMessage[1] == "verbs"):
-           out = verbsCommand(message, splitMessage) 
+           out = verbsCommand(message, splitMessage)
 
         elif(splitMessage[1] == "tags"):
             out = tagsCommand(message, splitMessage)
@@ -263,22 +266,31 @@ async def on_message(message):
             out = chooseCommand(message, splitMessage)
 
         elif (splitMessage[1] == "eightball"):
-           out = eightballCommand(message, splitMessage) 
+           out = eightballCommand(message, splitMessage)
 
         elif(splitMessage[1] == "add"):
             out = addCommand(message, splitMessage)
-            
+
         elif(splitMessage[1] == "delete"):
             out = deleteCommand(message, splitMessage)
-            
+
+        elif(splitMessage[1] == "dump"):
+            if (message.author.id not in config.admins):
+                out = "You are not an admin!"
+            else:
+                path = backup.backup()
+                with open(path, "r") as f:
+                    wrap = discord.File(f)
+                    await message.channel.send(file=wrap)
+
     if ((message.content == "<@!" + str(idnumber) + "> I'm sure!" or
           message.content == "<@" + str(idnumber) + "> I'm sure!")  and
             deletion[0]):
             out = deleteVerify(message, splitMessage)
-        
+
     try:
         await message.channel.send(out[0], embed = out[1])
     except IndexError:
         pass
-    
+
 client.run(config.token)
