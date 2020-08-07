@@ -280,7 +280,7 @@ async def on_message(message):
     messageContent = re.sub(r'\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
     if (message.content.startswith("+")):
-        if (message.content.startswith("+f")):
+        if (splitMessage[0] == "+f"):
             out = fCommand(message, splitMessage)
         else:
             out = verbCommand(message, splitMessage)
