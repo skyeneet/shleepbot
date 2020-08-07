@@ -1,5 +1,6 @@
 dbPath = "storage/storage.db"
-token = ""
+backupPath = "storage/"
+token = "token"
 admins = [156903320945033216]
 
 message = "**RECIEVER**, you got a VERB from **SENDER**"
