@@ -31,7 +31,6 @@ def getGif(verb, tags):
                     newGifs.append(i)
             gifs = newGifs
 
-
         if (len(gifs) == 0):
             out = Gif()
             out.url = config.noGifFound
@@ -131,7 +130,6 @@ def tagsCommand(message, splitMessage):
     tags = {}
     for i in gifs:
         for x in i.tags:
-            print ("|" + x + "|")
             if (x not in tags):
                 tags[x] = 1
             else:
@@ -184,7 +182,7 @@ def addCommand(message, splitMessage):
 
         newGif.url=splitMessage[3]
         for i in range(4, len(splitMessage)):
-            newGif.tags.append(splitMessage[i])
+            newGif.tags.add(splitMessage[i])
         if (splitMessage[2] in reactions.keys()):
             reactions[splitMessage[2]].append(newGif)
             out = "Added the image!"
@@ -208,9 +206,7 @@ sure!\n```"
         if (splitMessage[2] == "gif"):
             count = 0
             shad = copy.deepcopy(reactions[splitMessage[3]])
-            print(len(shad))
             for i in range(0,len(shad)):
-                print(i)
                 if (shad[i].url ==
                         splitMessage[4]):
                     del reactions[splitMessage[3]][i - count]
@@ -236,6 +232,44 @@ def deleteVerify(message, splitMessage):
         db["gifs"] = reactions
 
     return out, None
+
+def pruneCommand(message, splitMessage):
+    global reactions
+    totalCount = 0
+    for i in reactions:
+        allUrls = {}
+        dups = []
+        for x in range(0,len(reactions[i])):
+            if (type(reactions[i][x].tags) is list):
+                reactions[i][x].tags = set(reactions[i][x].tags)
+
+            if (reactions[i][x].url not in allUrls.keys()):
+                allUrls[reactions[i][x].url] = x
+            else:
+                totalCount += 1
+                dups.append([x,reactions[i][x].tags])
+
+        tempCount = 0
+        for x in dups:
+            og = allUrls[reactions[i][x[0] - tempCount].url]
+            reactions[i][og].tags = reactions[i][og].tags.union(
+                    reactions[i][x[0] - tempCount].tags)
+            del reactions[i][x[0] - tempCount]
+            tempCount += 1
+
+    with shelve.open(config.dbPath) as db:
+        db["gifs"] = reactions
+
+    out = "I deleted COUNT duplicates and merged tags!"
+    out = out.replace("COUNT", str(totalCount))
+    return out, None
+
+
+
+
+
+
+
 @client.event
 async def on_message(message):
     global reactions
@@ -243,7 +277,7 @@ async def on_message(message):
     global idnumber
     out = tuple()
     messageContent = message.content
-    messageContent = re.sub('\s+',' ',messageContent)
+    messageContent = re.sub(r'\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
     if (message.content.startswith("+")):
         if (message.content.startswith("+f")):
@@ -273,6 +307,9 @@ async def on_message(message):
 
         elif(splitMessage[1] == "delete"):
             out = deleteCommand(message, splitMessage)
+
+        elif(splitMessage[1] == "prune"):
+            out = pruneCommand(message, splitMessage)
 
         elif(splitMessage[1] == "dump"):
             if (message.author.id not in config.admins):

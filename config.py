@@ -35,6 +35,8 @@ Admin Commands:\n\
     - Deletes a gif with the given verb + url\n\
 @Shleep Bot dump\n\
     - Posts a yaml file of the current database\n\
+@Shleep Bot prune\n\
+    - Deletes any duplicate gifs, and merges tags!\n\
 ```\n\
 \n\
 You can run any verb command with:\n\
