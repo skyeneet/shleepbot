@@ -273,6 +273,17 @@ def convertc2f(message, splitMessage):
 
     return out, None
 
+def convertf2c(message, splitMessage):
+    out = "**FAR**°F, in a less reasonable termperature scale, is **CEL**°C"
+    far = int(splitMessage[2])
+    cel = (far - 32) * 5.0/9.0
+    out = out.replace("CEL", str(cel))
+    out = out.replace("FAR", str(far))
+
+    return out, None
+
+
+
 
 
 
@@ -311,6 +322,9 @@ async def on_message(message):
 
         elif (splitMessage[1] == "convertc2f"):
            out = convertc2f(message, splitMessage)
+
+        elif (splitMessage[1] == "convertf2c"):
+           out = convertf2c(message, splitMessage)
 
         elif(splitMessage[1] == "add"):
             out = addCommand(message, splitMessage)
