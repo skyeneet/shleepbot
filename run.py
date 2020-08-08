@@ -265,7 +265,7 @@ def pruneCommand(message, splitMessage):
     return out, None
 
 def convertc2f(message, splitMessage):
-    out = "**CEL**°C, in a reasonable termperature scale, is **FAR**°F"
+    out = "**CEL**°C, in a reasonable temperature scale, is **FAR**°F"
     cel = int(splitMessage[2])
     far = 9.0/5.0 * cel + 32
     out = out.replace("CEL", str(cel))
@@ -274,7 +274,7 @@ def convertc2f(message, splitMessage):
     return out, None
 
 def convertf2c(message, splitMessage):
-    out = "**FAR**°F, in a less reasonable termperature scale, is **CEL**°C"
+    out = "**FAR**°F, in a less reasonable temperature scale, is **CEL**°C"
     far = int(splitMessage[2])
     cel = (far - 32) * 5.0/9.0
     out = out.replace("CEL", str(cel))
