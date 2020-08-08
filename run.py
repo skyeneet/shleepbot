@@ -264,7 +264,14 @@ def pruneCommand(message, splitMessage):
     out = out.replace("COUNT", str(totalCount))
     return out, None
 
+def convertc2f(message, splitMessage):
+    out = "**CEL**°C, in a reasonable termperature scale, is **FAR**°F"
+    cel = int(splitMessage[2])
+    far = 9.0/5.0 * cel + 32
+    out = out.replace("CEL", str(cel))
+    out = out.replace("FAR", str(far))
 
+    return out, None
 
 
 
@@ -301,6 +308,9 @@ async def on_message(message):
 
         elif (splitMessage[1] == "eightball"):
            out = eightballCommand(message, splitMessage)
+
+        elif (splitMessage[1] == "convertc2f"):
+           out = convertc2f(message, splitMessage)
 
         elif(splitMessage[1] == "add"):
             out = addCommand(message, splitMessage)
