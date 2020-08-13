@@ -12,6 +12,9 @@ from gif import Gif
 global reactions
 reactions = {}
 
+global synonyms
+synonyms = {}
+
 global idnumber
 idnumber = 0
 
@@ -54,6 +57,7 @@ def getMessage(sender, reciever, verb, gif):
 @client.event
 async def on_ready():
     global reactions
+    global synonyms
     print('Logged in as')
     print(client.user.name)
     print('---------')
@@ -282,10 +286,11 @@ def convertf2c(message, splitMessage):
 
     return out, None
 
-
-
-
-
+def synonymCommand(message, splitMessage):
+    global reactions
+    out = "Succesfully made a synonym of **OG**, **NEW**!"
+    reactions[splitMessage[3]] = reactions[splitMessage[2]]
+    return [out, None]
 
 
 @client.event
@@ -331,6 +336,9 @@ async def on_message(message):
 
         elif(splitMessage[1] == "delete"):
             out = deleteCommand(message, splitMessage)
+        
+        elif(splitMessage[1] == "synonym"):
+            out = synonymCommand(message, splitMessage)
 
         elif(splitMessage[1] == "prune"):
             out = pruneCommand(message, splitMessage)
