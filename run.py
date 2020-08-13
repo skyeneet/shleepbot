@@ -290,6 +290,8 @@ def synonymCommand(message, splitMessage):
     global reactions
     out = "Succesfully made a synonym of **OG**, **NEW**!"
     reactions[splitMessage[3]] = reactions[splitMessage[2]]
+    out = out.replace("OG", splitMessage[2])
+    out = out.replace("NEW", splitMessage[3])
     return [out, None]
 
 
