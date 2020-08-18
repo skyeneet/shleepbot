@@ -375,7 +375,10 @@ async def on_message(message):
 
     if (out[0] == None and out[1] == None and
             "|" in  message.content):
-        out = altChooseCommand(message,splitMessage)
+
+        if (message.content.startswith("<@!" + str(idnumber) + ">") or
+            message.content.startswith("<@" + str(idnumber) + ">")):
+            out = altChooseCommand(message,splitMessage)
 
     try:
         await message.channel.send(out[0], embed = out[1])
