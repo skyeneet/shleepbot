@@ -167,6 +167,20 @@ def chooseCommand(message, splitMessage):
 
     return out, None
 
+def altChooseCommand(message, splitMessage):
+    unsplit = message.content
+    if (len(splitMessage[0]) == len("<@!" + str(idnumber) + ">")):
+        unsplit = unsplit[len("<@!" + str(idnumber) + ">"):]
+    else:
+        unsplit = unsplit[len("<@" + str(idnumber) + ">"):]
+    split = unsplit.split("|")
+    choice = split[random.randint(0, len(split) - 1)]
+    out = ("**" + message.author.display_name + "**" +
+    ", **" + choice.strip() + "** is the best choice")
+
+    return out, None
+
+
 def eightballCommand(message, splitMessage):
     question = ""
     for i in range (2, len(splitMessage)):
@@ -300,7 +314,7 @@ async def on_message(message):
     global reactions
     global deletion
     global idnumber
-    out = tuple()
+    out = tuple([None, None])
     messageContent = message.content
     messageContent = re.sub(r'\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
@@ -338,7 +352,7 @@ async def on_message(message):
 
         elif(splitMessage[1] == "delete"):
             out = deleteCommand(message, splitMessage)
-        
+
         elif(splitMessage[1] == "synonym"):
             out = synonymCommand(message, splitMessage)
 
@@ -358,6 +372,10 @@ async def on_message(message):
           message.content == "<@" + str(idnumber) + "> I'm sure!")  and
             deletion[0]):
             out = deleteVerify(message, splitMessage)
+
+    if (out[0] == None and out[1] == None and
+            "|" in  message.content):
+        out = altChooseCommand(message,splitMessage)
 
     try:
         await message.channel.send(out[0], embed = out[1])
