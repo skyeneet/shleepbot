@@ -136,11 +136,17 @@ def verbsCommand(message, splitMessage):
             if (not found):
                 allFound.append([reactions[category], [category]])
 
+        lines = []
         for nm in allFound:
+            line = ""
             for i in nm[1]:
-                out+= "+" + i +  "    "
-                
-            out += "\n"
+                line += "+" + i +  "   "
+
+            line += "\n"
+            lines.append(line)
+        lines.sort()
+        for i in lines:
+            out += i
 
         out+="```"
         snd = discord.Embed()
