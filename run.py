@@ -122,18 +122,22 @@ def verbsCommand(message, splitMessage):
     else:
         out = "List of verbs:\n```\n"
 
-        allFound = {}
+        allFound = []
 
         for category in reactions.keys():
             
-            if (id(reactions[category]) in allFound.keys()):
-                allFound[id(reactions[category])].append(category)
-
-            else: 
-                allFound[id(reactions[category])] = [category]
+            found = False
+            for i in allFound:
+                if (i[0] is reactions[category]):
+                    i[1].append(category)
+                    found = True
+                    break
+                
+            if (not found):
+                allFound.append([reactions[category], [category]])
 
         for nm in allFound:
-            for i in allFound[nm]:
+            for i in nm[1]:
                 out+= "+" + i +  "    "
                 
             out += "\n"
