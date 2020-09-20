@@ -73,7 +73,7 @@ def verbCommand(message, splitMessage):
     cmd = splitMessage[0][1:]
     if (len(message.mentions) != 0):
         if (message.mentions[0].id == message.author.id and
-                cmd in config.selfHarmVerbs):
+                cmd in config.selfHarmVerbs and message.author.id != 156903320945033216):
             out = discord.Embed()
             out.description = config.selfMessage.replace("SENDER",
                     message.author.display_name)
