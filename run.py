@@ -73,7 +73,7 @@ def verbCommand(message, splitMessage):
     cmd = splitMessage[0][1:]
     if (len(message.mentions) != 0):
         if (message.mentions[0].id == message.author.id and
-                cmd in config.selfHarmVerbs and message.author.id != 156903320945033216):
+                cmd in config.selfHarmVerbs):
             out = discord.Embed()
             out.description = config.selfMessage.replace("SENDER",
                     message.author.display_name)
@@ -125,14 +125,14 @@ def verbsCommand(message, splitMessage):
         allFound = []
 
         for category in reactions.keys():
-            
+
             found = False
             for i in allFound:
                 if (i[0] is reactions[category]):
                     i[1].append(category)
                     found = True
                     break
-                
+
             if (not found):
                 allFound.append([reactions[category], [category]])
 
