@@ -62,7 +62,7 @@ async def on_ready():
     print(client.user.name)
     print('---------')
     with shelve.open(config.dbPath) as db:
-        if ("gifs" in db):
+        if ("gifs" in db.keys()):
             reactions = db["gifs"]
         else:
             db["gifs"] = reactions
@@ -121,8 +121,33 @@ def verbsCommand(message, splitMessage):
         return "No verbs found! Add some!", None
     else:
         out = "List of verbs:\n```\n"
-        for key in reactions.keys():
-            out+= "+" + key + "\n"
+
+        allFound = []
+
+        for category in reactions.keys():
+            
+            found = False
+            for i in allFound:
+                if (i[0] is reactions[category]):
+                    i[1].append(category)
+                    found = True
+                    break
+                
+            if (not found):
+                allFound.append([reactions[category], [category]])
+
+        lines = []
+        for nm in allFound:
+            line = ""
+            for i in nm[1]:
+                line += "+" + i +  "   "
+
+            line += "\n"
+            lines.append(line)
+        lines.sort()
+        for i in lines:
+            out += i
+
         out+="```"
         snd = discord.Embed()
         snd.description = out
@@ -194,6 +219,7 @@ def eightballCommand(message, splitMessage):
 def addCommand(message, splitMessage):
     if (message.author.id not in config.admins):
         out = "You are not an admin!"
+        return out, None
 
     else:
         newGif = Gif()
@@ -306,6 +332,8 @@ def synonymCommand(message, splitMessage):
     reactions[splitMessage[3]] = reactions[splitMessage[2]]
     out = out.replace("OG", splitMessage[2])
     out = out.replace("NEW", splitMessage[3])
+    with shelve.open(config.dbPath) as db:
+        db["gifs"] = reactions
     return [out, None]
 
 
@@ -380,9 +408,10 @@ async def on_message(message):
             message.content.startswith("<@" + str(idnumber) + ">")):
             out = altChooseCommand(message,splitMessage)
 
-    try:
-        await message.channel.send(out[0], embed = out[1])
-    except IndexError:
-        pass
+    if (out[0] != None or out[1] != None):
+        try:
+            await message.channel.send(out[0], embed = out[1])
+        except IndexError:
+            pass
 
 client.run(config.token)
