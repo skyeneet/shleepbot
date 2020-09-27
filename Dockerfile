@@ -3,4 +3,4 @@ RUN pip3 install discord pyyaml
 ADD . /shleepbot
 WORKDIR /shleepbot
 RUN mkdir -p storage/
-CMD [ "python3", "./run.py"]
+CMD [ "python3", "./run.py", ">", "/shleepbot/log", "2>", "/shleepbot/error"]

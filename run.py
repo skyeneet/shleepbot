@@ -401,14 +401,14 @@ async def on_message(message):
             deletion[0]):
             out = deleteVerify(message, splitMessage)
 
-    if (out[0] == None and out[1] == None and
-            "|" in  message.content):
+    if (out != None and (out[0] == None and out[1] == None and
+            "|" in  message.content)):
 
         if (message.content.startswith("<@!" + str(idnumber) + ">") or
             message.content.startswith("<@" + str(idnumber) + ">")):
             out = altChooseCommand(message,splitMessage)
 
-    if (out[0] != None or out[1] != None):
+    if (out != None and (out[0] != None or out[1] != None)):
         try:
             await message.channel.send(out[0], embed = out[1])
         except IndexError:
