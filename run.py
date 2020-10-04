@@ -40,7 +40,9 @@ def getGif(verb, tags):
             out.url = config.noGifFound
             return out
         else:
-            return gifs[random.randint(0, len(gifs) - 1)]
+            out = gifs[random.randint(0, len(gifs) - 1)]
+            log(str(out.url))
+            return out
 
 def getMessage(sender, reciever, verb, gif):
     out = discord.Embed()
