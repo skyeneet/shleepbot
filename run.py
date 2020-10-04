@@ -217,6 +217,17 @@ def eightballCommand(message, splitMessage):
     out = out.replace("ANSWER", answer)
     return out, None
 
+def altEightballCommand(message, splitMessage):
+    question = ""
+    for i in range (1, len(splitMessage)):
+        question += splitMessage[i] + " "
+    answer = config.eightballMessages[random.randint(0,len(config.eightballMessages))]
+    out = config.eightballMessage
+    out = out.replace("QUESTION", question)
+    out = out.replace("ANSWER", answer)
+    return out, None
+
+
 def addCommand(message, splitMessage):
     if (message.author.id not in config.admins):
         out = "You are not an admin!"
@@ -405,12 +416,16 @@ async def on_message(message):
             deletion[0]):
             out = deleteVerify(message, splitMessage)
 
-    if (out != None and (out[0] == None and out[1] == None and
-            "|" in  message.content)):
+    if (out != None and (out[0] == None and out[1] == None)):
+        if("|" in  message.content):
+            if (message.content.startswith("<@!" + str(idnumber) + ">") or
+                message.content.startswith("<@" + str(idnumber) + ">")):
+                out = altChooseCommand(message,splitMessage)
+        if("?" in message.content):
+            if (message.content.startswith("<@!" + str(idnumber) + ">") or
+                message.content.startswith("<@" + str(idnumber) + ">")):
+                out = altEightballCommand(message,splitMessage)
 
-        if (message.content.startswith("<@!" + str(idnumber) + ">") or
-            message.content.startswith("<@" + str(idnumber) + ">")):
-            out = altChooseCommand(message,splitMessage)
 
     if (out != None and (out[0] != None or out[1] != None)):
         try:
