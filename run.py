@@ -7,6 +7,7 @@ import copy
 import datetime
 import re
 import backup
+from log import log
 from gif import Gif
 
 global reactions
@@ -343,13 +344,16 @@ async def on_message(message):
     global deletion
     global idnumber
     out = tuple([None, None])
+    log(message.author.display_name)
     messageContent = message.content
     messageContent = re.sub(r'\s+',' ',messageContent)
     splitMessage = messageContent.split(" ")
     if (message.content.startswith("+")):
         if (splitMessage[0] == "+f"):
+            log("sent f")
             out = fCommand(message, splitMessage)
         else:
+            log("sent verb")
             out = verbCommand(message, splitMessage)
 
     elif (message.content.startswith("<@!" + str(idnumber) + ">") or
