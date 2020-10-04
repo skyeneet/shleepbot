@@ -26,6 +26,10 @@ helpMessage = "Mention Commands:\n\
     - Choose from any number of choices!\n\
 @Shleep Bot eightball <question>\n\
     - Let Shleep Bot answer all your toughest inquiries\n\
+@Shleep Bot convertc2f <num>\n\
+    - Convert Celsius to Farenheit\n\
+@Shleep Bot convertf2c <num>\n\
+    - Convert Farenheit to Celsius\n\
 ```\n\
 Admin Commands:\n\
 ```\n\
