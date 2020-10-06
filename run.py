@@ -89,8 +89,10 @@ def verbCommand(message, splitMessage):
                     for i in range(2, len(splitMessage)):
                         tags.append(splitMessage[i])
 
+                g = getGif(cmd, tags)
+                log("Secondary check: "  + str(g.url))
                 send = getMessage(message.author, message.mentions[0], cmd,
-                        getGif(cmd, tags))
+                        g)
                 return None, send
 
 def fCommand(message, splitMessage):
